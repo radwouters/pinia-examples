@@ -8,25 +8,30 @@ const PAGE_SIZE = 5
 export const useBeerStore = defineStore('beers', () => {
   const beers = ref<Beer[]>([])
   const currentPage = ref<number>(1)
+  const beersLoading = ref<boolean>(false);
+  const beerError = ref<string | null>(null);
 
   const endpoint = computed(
-    () => `https://api.punapi.com/v2/beers?page=${currentPage.value}&per_page=${PAGE_SIZE}`
+    () => `https://api.punkapi.com/v2/beers?page=${currentPage.value}&per_page=${PAGE_SIZE}`
   )
 
   async function getBeers(causeError = false) {
-    if (causeError) {
-      throw new Error('Kut! Het bier is op!')
+    try {
+      beerError.value = null;
+      beersLoading.value = true;
+      if (causeError) {
+        throw new Error('Kut! Het bier is op!')
+      }
+      const responseData = (await axios.get(endpoint.value, )).data
+
+      beers.value = [...beers.value, ...responseData]
+      currentPage.value++;
+    } catch (requestError) {
+      beerError.value = (requestError as Error).message
+    } finally {
+      beersLoading.value = false;
     }
-    beers.value.push(
-      await axios.get(endpoint.value, {
-        withCredentials: false,
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      })
-    )
   }
 
-  return { beers, getBeers }
+  return { beers, beersLoading, beerError, getBeers }
 })
