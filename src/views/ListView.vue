@@ -13,10 +13,11 @@ const getMoreBeers = () => {
 </script>
 <template>
   <div>
+    <button @click="getMoreBeers">More beer?</button><br>
+    <button @click="store.clear()">Annuleer de hele tyfuszooi maar</button><br>
     <label for="error">Should stuff break?</label>
     <input type="checkbox" v-model="causeError" name="error"><br>
     <p style="color:red;">{{ beerError }}</p>
-    <button @click="getMoreBeers">More beer?</button>
     <h1 v-show="beersLoading">Loading...</h1>
     <p v-for="beer in beers" :key="beer.id">
       {{ beer.name }} {{ beer.abv }}%

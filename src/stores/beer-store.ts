@@ -7,13 +7,13 @@ import { useSettingsStore } from '@/stores/settings-store'
 const PAGE_SIZE = 5
 
 export const useBeerStore = defineStore('beers', () => {
-  const settingsStore = useSettingsStore();
-  const {settings} = storeToRefs(settingsStore)
+  const settingsStore = useSettingsStore()
+  const { settings } = storeToRefs(settingsStore)
 
   const beers = ref<Beer[]>([])
   const currentPage = ref<number>(1)
-  const beersLoading = ref<boolean>(false);
-  const beerError = ref<string | null>(null);
+  const beersLoading = ref<boolean>(false)
+  const beerError = ref<string | null>(null)
 
   const endpoint = computed(
     () => `https://api.punkapi.com/v2/beers?page=${currentPage.value}&per_page=${PAGE_SIZE}`
@@ -27,24 +27,25 @@ export const useBeerStore = defineStore('beers', () => {
 
   const getBeers = async (causeError = false) => {
     try {
-      beerError.value = null;
-      beersLoading.value = true;
+      beerError.value = null
+      beersLoading.value = true
+      // This is needed for the demo
       if (causeError) {
         throw new Error('Kut! Het bier is op!')
       }
-      const responseData = (await axios.get(endpoint.value, )).data
+      const responseData = (await axios.get(endpoint.value)).data
 
       beers.value = [...beers.value, ...responseData]
-      currentPage.value++;
+      currentPage.value++
     } catch (requestError) {
       beerError.value = (requestError as Error).message
     } finally {
-      beersLoading.value = false;
+      beersLoading.value = false
     }
   }
 
   const clear = () => {
-    beers.value = [];
+    beers.value = []
   }
 
   return { beers, preferredBeers, beersLoading, beerError, getBeers, clear }
